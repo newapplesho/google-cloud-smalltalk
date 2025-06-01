@@ -62,24 +62,36 @@ GoogleAuthClient >> configureServiceAccountEntity: anEntity using: adcContents [
 ]
 
 { #category : 'private' }
+GoogleAuthClient >> createRequest [
+
+	| request |
+	request := ZnRequest empty.
+	^ request
+]
+
+{ #category : 'private' }
 GoogleAuthClient >> credentialsForType: aType using: adcContents [
 
-	| entity fetchedAt response |
+	| entity fetchedAt request response |
 	entity := ZnApplicationFormUrlEncodedEntity new.
 	self configureEntity: entity forType: aType using: adcContents.
 
 	fetchedAt := Time now asSeconds.
 
-	response := self httpClient
-		            httpPost: self oauth2Endpoint
-		            contents: entity.
+	request := self createRequest.
+	request method: #POST.
+	request url: self oauth2Endpoint.
+	request entity: entity.
+	self httpClient request: request.
+	httpClient execute.
 
-	response := (NeoJSONReader on: response contents readStream)
+	response := (NeoJSONReader on:
+			             httpClient response contents readStream)
 		            mapClass: GoogleOauth2RefreshResponse;
 		            next.
 	^ response
-		fetchedAt: fetchedAt;
-		yourself
+		  fetchedAt: fetchedAt;
+		  yourself
 ]
 
 { #category : 'accessing' }
@@ -95,8 +107,14 @@ GoogleAuthClient >> credentialsLoader: anObject [
 ]
 
 { #category : 'default' }
-GoogleAuthClient >> defaultClientClass [
-	^ GoogleHttpClient 
+GoogleAuthClient >> defaultHttpClientClass [
+	^ ZnClient 
+]
+
+{ #category : 'accessing auth' }
+GoogleAuthClient >> getAccessToken [
+
+	^ self getCredentials token
 ]
 
 { #category : 'accessing auth' }
@@ -113,7 +131,7 @@ GoogleAuthClient >> getCredentials [
 { #category : 'accessing' }
 GoogleAuthClient >> httpClient [
 
-	^ httpClient ifNil: [ httpClient := self defaultClientClass new ]
+	^ httpClient ifNil: [ httpClient := self defaultHttpClientClass new ]
 ]
 
 { #category : 'accessing' }

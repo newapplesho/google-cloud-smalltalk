@@ -19,8 +19,10 @@ BaselineOfGoogleCloud >> baseline: spec [
 			with: [ spec repository: 'github://svenvc/NeoJSON/repository' ].
 
 		spec
-			package: 'Google-Core';
-			package: 'Google-Auth' with: [ spec requires: #( 'Google-Core' ) ] ].
+			package: 'Google-Auth';
+			package: 'Google-Core' with: [ spec requires: #( 'Google-Auth' ) ];
+			package: 'Google-BigQuery' with: [ spec requires: #('Google-Core')] 
+		].
 
 	spec
 		group: 'Tests' with: #( 'Google-Core' );

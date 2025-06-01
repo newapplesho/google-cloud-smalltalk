@@ -47,7 +47,7 @@ GoogleAuthClientTest >> testGetCredentialsForAuthorizedUser [
 
 
 	responseJsonString := '{ "access_token": "mock_access_token", "expires_in": 3600, "scope": "scope1 scope2", "token_type": "Bearer", "id_token": "mock_id_token" }'.
-	mockHttpClient on: #httpPost:contents: respond: (ZnResponse new
+	mockHttpClient on: #response respond: (ZnResponse new
 			 statusLine: (ZnStatusLine new code: 200);
 			 entity: (ZnEntity json: responseJsonString);
 			 yourself).
@@ -55,11 +55,15 @@ GoogleAuthClientTest >> testGetCredentialsForAuthorizedUser [
 	expectedResponse := client getCredentials.
 
 	self assert: (expectedResponse isKindOf: GoogleOauth2RefreshResponse).
-	self assert: (expectedResponse at: 'access_token') equals: 'mock_access_token'.
+	self
+		assert: (expectedResponse at: 'access_token')
+		equals: 'mock_access_token'.
 	self assert: (expectedResponse at: 'expires_in') equals: 3600.
 	self assert: (expectedResponse at: 'scope') equals: 'scope1 scope2'.
 	self assert: (expectedResponse at: 'token_type') equals: 'Bearer'.
-	self assert: (expectedResponse at: 'id_token') equals: 'mock_id_token'.
+	self
+		assert: (expectedResponse at: 'id_token')
+		equals: 'mock_id_token'
 ]
 
 { #category : 'tests' }
@@ -73,8 +77,7 @@ GoogleAuthClientTest >> testGetCredentialsForServiceAccount [
 			                   'mock-service-account@project.iam.gserviceaccount.com';
 		                   at: 'private_key_id' put: 'mock_key_id';
 		                   at: 'private_key'
-		                   put:
-			                   '-----BEGIN RSA PRIVATE KEY-----
+		                   put: '-----BEGIN RSA PRIVATE KEY-----
 MIIEogIBAAKCAQEAnzyis1ZjfNB0bBgKFMSvvkTtwlvBsaJq7S5wA+kzeVOVpVWw
 kWdVha4s38XM/pa/yr47av7+z3VTmvDRyAHcaT92whREFpLv9cj5lTeJSibyr/Mr
 m/YtjCZVWgaOYIhwrXwKLqPr/11inWsAkfIytvHWTxZYEcXLgAXFuUuaS3uF9gEi
@@ -112,7 +115,7 @@ jg/3747WSsf/zBTcHihTRBdAv6OmdhV4/dD5YBfLAkLrd+mX7iE=
 
 	responseJsonString := '{ "access_token": "mock_sa_access_token", "expires_in": 3600, "token_type": "Bearer" }'.
 
-	mockHttpClient on: #httpPost:contents: respond: (ZnResponse new
+	mockHttpClient on: #response respond: (ZnResponse new
 			 statusLine: (ZnStatusLine new code: 200);
 			 entity: (ZnEntity json: responseJsonString);
 			 yourself).
