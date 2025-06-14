@@ -71,10 +71,28 @@ GoogleHttpClient >> httpRequest: aUri method: aMethod contents: anEntity [
 	request := self createRequest.
 	request method: aMethod.
 	request url: aUri asString.
+
 	anEntity ifNotNil: [ request entity: anEntity ].
 	self client request: request.
 	client execute.
 	^ client response
+]
+
+{ #category : 'accessing' }
+GoogleHttpClient >> logLevel [
+
+	self client logLevel
+]
+
+{ #category : 'accessing' }
+GoogleHttpClient >> logLevel: integer [
+	"Set the log level to integer.
+	0 - no logging
+	1 - simplified transaction logging
+	2 - detailed transaction logging
+	3 - log everything"
+
+	self client logLevel: integer
 ]
 
 { #category : 'private' }
@@ -89,4 +107,16 @@ GoogleHttpClient >> readFromResponse: response [
 GoogleHttpClient >> readFromResponse: response responseClass: aResponseClass [
 
 	^ (aResponseClass on: response) value
+]
+
+{ #category : 'accessing' }
+GoogleHttpClient >> timeout [
+
+	^ self client timeout
+]
+
+{ #category : 'accessing' }
+GoogleHttpClient >> timeout: anInteger [
+
+	self client timeout: anInteger
 ]
