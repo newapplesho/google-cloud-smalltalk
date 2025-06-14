@@ -3,6 +3,7 @@ Class {
 	#superclass : 'Error',
 	#instVars : [
 		'message',
+		'statusCode',
 		'properties'
 	],
 	#category : 'Google-GenAI',
@@ -48,6 +49,18 @@ GeminiError >> properties: anObject [
 GeminiError >> status [
 
 	^ self properties status
+]
+
+{ #category : 'accessing' }
+GeminiError >> statusCode [
+
+	^ statusCode
+]
+
+{ #category : 'accessing' }
+GeminiError >> statusCode: anObject [
+
+	statusCode := anObject
 ]
 
 { #category : 'accessing' }
