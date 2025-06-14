@@ -13,7 +13,8 @@ Class {
 
 { #category : 'accessing' }
 GoogleAPIClient >> client [
-^ client ifNil: [ client := self httpClient ]
+
+	^ client ifNil: [ client := self httpClient ]
 ]
 
 { #category : 'accessing' }
@@ -57,6 +58,23 @@ GoogleAPIClient >> location [
 GoogleAPIClient >> location: anObject [
 
 	location := anObject
+]
+
+{ #category : 'accessing' }
+GoogleAPIClient >> logLevel [
+
+	self client logLevel
+]
+
+{ #category : 'accessing' }
+GoogleAPIClient >> logLevel: integer [
+	"Set the log level to integer.
+	0 - no logging
+	1 - simplified transaction logging
+	2 - detailed transaction logging
+	3 - log everything"
+
+	self client logLevel: integer
 ]
 
 { #category : 'accessing' }
