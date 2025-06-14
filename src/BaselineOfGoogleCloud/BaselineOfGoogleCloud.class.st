@@ -17,10 +17,14 @@ BaselineOfGoogleCloud >> baseline: spec [
 			with: [ spec requires: #( 'NeoJSON' 'JSONWebToken' ) ];
 			package: 'Google-Core'
 			with: [ spec requires: #( 'Google-Auth' 'NeoJSON' ) ];
+			package: 'Google-Core-Tests'
+			with: [ spec requires: #( 'Google-Core' ) ];
 			package: 'Google-BigQuery'
 			with: [ spec requires: #( 'Google-Core' ) ];
 			package: 'Google-GenAI'
-			with: [ spec requires: #( 'Google-Core' ) ] ].
+			with: [ spec requires: #( 'Google-Core' ) ]; 
+			package: 'Google-GenAI-Tests'
+			with: [ spec requires: #( 'Google-GenAI' ) ].].
 
 	spec
 		group: 'Tests' with: #( 'Google-Core' 'Google-GenAI' );
