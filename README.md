@@ -15,7 +15,7 @@ Metacello new
 
 | Name                                 | Smalltalk Version | Version        |
 | ------------------------------------ | ----------------- | -------------- |
-| [Pharo Smalltalk](http://pharo.org/) | 12.0              | Latest Version |
+| [Pharo Smalltalk](http://pharo.org/) | 12.0, 13.0        | Latest Version |
 
 ## Quickstart
 
@@ -71,8 +71,8 @@ Transcript show: 'AI generated class: ', classCode; cr.
 "Attempt to create the class with AI-generated code"
 [
     "Try to parse and use the AI-generated class definition"
-    cleanClassCode := classCode copyReplaceAll: '```smalltalk' with: '' copyReplaceAll: '```' with: ''.
-    Compiler evaluate: cleanClassCode.
+    cleanClassCode := (classCode copyReplaceAll: '```smalltalk' with: '') copyReplaceAll: '```' with: ''.
+    Smalltalk compiler evaluate: cleanClassCode.
 
     Transcript show: 'SUCCESS: TodoItem class created with AI code!'; cr.
 
