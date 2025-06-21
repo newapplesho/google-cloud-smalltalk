@@ -3,13 +3,17 @@ SmalltalkCISpec {
     SCIMetacelloLoadSpec {
       #baseline : 'GoogleCloud',
       #directory : 'src',
-      #load : [ 'CI' ],
+      #load : [ 'default' ],
       #platforms : [ #pharo ]
     }
   ],
   #testing : {
     #coverage : {
       #packages : [ 'Google*' ]
-    }
+    },
+    #include : {
+      #packages : [ 'Google*' ]
+    },
+    #packages : [ 'Google-*' ]
   }
 }
