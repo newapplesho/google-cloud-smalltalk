@@ -1,4 +1,4 @@
-# google-cloud-smalltalk
+# google-cloud-smalltalk [![ci](https://github.com/newapplesho/google-cloud-smalltalk/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/newapplesho/google-cloud-smalltalk/actions/workflows/ci.yml)
 
 Pharo Smalltalk client libraries for [Google Cloud Platform](https://cloud.google.com/) services.
 
