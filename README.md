@@ -2,6 +2,18 @@
 
 Pharo Smalltalk client libraries for [Google Cloud Platform](https://cloud.google.com/) services.
 
+## IMPORTANT DISCLAIMER - UNOFFICIAL LIBRARY
+
+This is an UNOFFICIAL, community-maintained library and is NOT affiliated with, endorsed, or supported by Google LLC.
+
+- Not an official Google product
+- No official support or warranties
+- Not maintained by Google
+- Use at your own risk
+
+Google Cloud and all related trademarks are property of Google LLC. This library is provided "AS IS" without warranty of any kind.
+For production use, we strongly recommend using the [official Google Cloud Client Libraries](https://cloud.google.com/apis/docs/cloud-client-libraries).
+
 ## Installation
 
 ```
