@@ -61,7 +61,3 @@ See [Gemini Documentation](docs/gemini.md) for chat, code generation, and more.
 - [Getting Started](docs/getting-started.md) - Authentication setup
 - [Gemini AI](docs/gemini.md) - Text generation and chat
 - [BigQuery](docs/bigquery.md) - Dataset management
-
-## License
-
-MIT License
