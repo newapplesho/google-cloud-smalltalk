@@ -36,7 +36,32 @@ BigQueryClient >> listAllDatasets [
 { #category : 'rest api' }
 BigQueryClient >> listDatasets [
 
-	^ self datasetsWithAllParameter: true
+	^ self datasetsWithAllParameter: false
+]
+
+{ #category : 'rest api' }
+BigQueryClient >> query: aQueryString [
+
+	^ self query: aQueryString settings: BigQueryQuerySettings new
+]
+
+{ #category : 'rest api' }
+BigQueryClient >> query: aQueryString settings: aBigQueryQuerySettings [
+
+	| url body jsonPayload response |
+	url := self serviceEndpoint , '/bigquery/v2/projects/'
+	       , self projectId , '/queries'.
+	body := aBigQueryQuerySettings asDictionary
+		        at: 'query' put: aQueryString;
+		        yourself.
+
+	jsonPayload := NeoJSONWriter toString: body.
+
+	response := self client
+		            httpPost: url
+		            contents: (ZnEntity json: jsonPayload).
+	^ BigQueryQueryResponse fromJson:
+		  (self client readFromResponse: response)
 ]
 
 { #category : 'accessing' }
