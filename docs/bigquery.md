@@ -8,6 +8,11 @@ This guide covers using Google BigQuery with google-cloud-smalltalk.
 client := BigQueryClient new
     projectId: 'your-gcp-project-id'.
 
+"Execute a query"
+result := client query: 'SELECT * FROM `dataset.table` LIMIT 10'.
+result rows do: [ :row | Transcript show: row; cr ].
+
+"List datasets"
 datasets := client listDatasets.
 Transcript show: datasets; cr.
 ```
@@ -42,17 +47,89 @@ dataset := client getDataset: 'my_dataset'.
 Transcript show: dataset; cr.
 ```
 
-## Response Format
+### Execute Query
 
-Responses are returned as parsed JSON (NeoJSONObject):
+Execute a SQL query:
 
 ```smalltalk
-datasets := client listDatasets.
+"Simple query"
+result := client query: 'SELECT name, age FROM `project.dataset.users` LIMIT 10'.
 
-"Access dataset list"
-(datasets at: 'datasets') do: [ :ds |
-    Transcript show: (ds at: 'datasetReference' at: 'datasetId'); cr.
-].
+"Query with settings"
+result := client
+    query: 'SELECT * FROM `project.dataset.table`'
+    settings: (BigQueryQuerySettings new
+        maxResults: 100;
+        timeoutMs: 30000;
+        yourself).
+
+"Dry run (validate query without executing)"
+result := client
+    query: 'SELECT * FROM `project.dataset.table`'
+    settings: (BigQueryQuerySettings new dryRun; yourself).
+```
+
+## BigQueryQuerySettings
+
+Configure query execution settings:
+
+```smalltalk
+settings := BigQueryQuerySettings new.
+
+"Validate query without executing"
+settings dryRun.
+
+"Limit number of results"
+settings maxResults: 100.
+
+"Set timeout in milliseconds"
+settings timeoutMs: 30000.
+
+"Use Legacy SQL (not recommended)"
+settings useLegacySql.
+```
+
+## BigQueryQueryResponse
+
+Query results are returned as `BigQueryQueryResponse`:
+
+```smalltalk
+result := client query: 'SELECT name, age FROM `dataset.users`'.
+
+"Access rows as Dictionaries"
+result rows do: [ :row |
+    Transcript
+        show: (row at: 'name');
+        show: ' - ';
+        show: (row at: 'age');
+        cr ].
+
+"Check result metadata"
+result totalRows.           "Total number of rows"
+result jobComplete.         "Whether query completed"
+result cacheHit.            "Whether result was cached"
+result totalBytesProcessed. "Bytes processed"
+
+"Pagination"
+result hasMorePages.        "Check if more pages exist"
+result pageToken.           "Token for next page"
+
+"Job information"
+result jobId.               "Job ID"
+result queryId.             "Query ID"
+
+"DML operations"
+result numDmlAffectedRows.  "Rows affected by DML"
+result dmlStats.            "DML statistics"
+
+"Error handling"
+result hasErrors.           "Check for errors"
+result errors.              "Error details"
+
+"Convenience methods"
+result isEmpty.             "Check if no rows returned"
+result do: [ :row | ... ].  "Iterate over rows"
+result collect: [ :row | ... ]. "Transform rows"
 ```
 
 ## Error Handling
