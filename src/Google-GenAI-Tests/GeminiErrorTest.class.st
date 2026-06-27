@@ -6,6 +6,19 @@ Class {
 }
 
 { #category : 'tests' }
+GeminiErrorTest >> testSignalIsCaughtAndExposesMessageText [
+
+	| caught |
+	caught := false.
+	[ (GeminiError new message: 'boom'; yourself) signal ]
+		on: GeminiError
+		do: [ :e |
+			caught := true.
+			self assert: e messageText equals: 'boom' ].
+	self assert: caught
+]
+
+{ #category : 'tests' }
 GeminiErrorTest >> testText [
 
 	| error |

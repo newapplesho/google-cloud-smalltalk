@@ -12,7 +12,7 @@ This is an **unofficial**, community-maintained library and is **not** affiliate
 
 | Package | Description | Documentation |
 |---------|-------------|---------------|
-| Google-GenAI | Gemini AI text generation and chat | [docs/gemini.md](docs/gemini.md) |
+| Google-GenAI | Gemini AI text generation, chat, function calling, and structured output | [docs/gemini.md](docs/gemini.md) |
 | Google-BigQuery | BigQuery dataset management | [docs/bigquery.md](docs/bigquery.md) |
 | Google-Auth | GCP authentication | [docs/getting-started.md](docs/getting-started.md) |
 
@@ -47,6 +47,7 @@ See [Getting Started](docs/getting-started.md) for more authentication options.
 client := GoogleGenAIClient new
     config: (GoogleGenAIConfig new
         projectId: 'your-gcp-project-id';
+        location: 'global';  "Gemini 2.5 models are served via the global endpoint on Vertex AI"
         useVertexAI: true;
         yourself).
 
@@ -54,10 +55,26 @@ response := client generateContent: 'Explain Smalltalk in one sentence.'.
 Transcript show: response text.
 ```
 
-See [Gemini Documentation](docs/gemini.md) for chat, code generation, and more.
+The default model is `gemini-2.5-flash`. See [Gemini Documentation](docs/gemini.md)
+for chat, **function calling**, code generation, and more.
 
 ## Documentation
 
 - [Getting Started](docs/getting-started.md) - Authentication setup
-- [Gemini AI](docs/gemini.md) - Text generation and chat
+- [Gemini AI](docs/gemini.md) - Text generation, chat, function calling, structured output
 - [BigQuery](docs/bigquery.md) - Dataset management
+- [Development](docs/development.md) - Building and testing the library in Pharo
+- [Roadmap](ROADMAP.md) - Planned features
+
+## Development
+
+This is a Pharo / Tonel project. With a local Pharo image (`make setup`):
+
+```bash
+make load    # load/reload the project into the image
+make test    # run the offline test suite
+make ui      # open the Pharo GUI
+```
+
+See [docs/development.md](docs/development.md) for the full workflow and
+[`.claude/rules/`](.claude/rules/) for coding conventions.

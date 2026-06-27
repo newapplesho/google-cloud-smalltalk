@@ -80,3 +80,4 @@ The library currently supports `service_account` and `authorized_user` types onl
 
 - [Gemini AI](gemini.md) - Generate content with Gemini
 - [BigQuery](bigquery.md) - Query data with BigQuery
+- [Development](development.md) - Build and test the library in Pharo

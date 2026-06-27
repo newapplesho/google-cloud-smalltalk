@@ -117,8 +117,9 @@ GoogleAuthClient >> getAccessToken [
 	^ self getCredentials token
 ]
 
-{ #category : 'accessing auth' }
-GoogleAuthClient >> getCredentials [
+{ #category : 'private' }
+GoogleAuthClient >> fetchCredentials [
+	"Load ADC and exchange them for a fresh OAuth2 access token."
 
 	| adcContents |
 	adcContents := self credentialsLoader
@@ -126,6 +127,15 @@ GoogleAuthClient >> getCredentials [
 	^ self
 		  credentialsForType: (adcContents at: 'type')
 		  using: adcContents
+]
+
+{ #category : 'accessing auth' }
+GoogleAuthClient >> getCredentials [
+	"Return cached credentials while still valid, otherwise fetch and cache."
+
+	(tokenCache notNil and: [ tokenCache isExpired not ]) ifTrue: [
+		^ tokenCache ].
+	^ tokenCache := self fetchCredentials
 ]
 
 { #category : 'accessing' }
