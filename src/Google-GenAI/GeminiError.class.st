@@ -1,3 +1,12 @@
+"I am the exception signalled when a Gemini request fails.
+
+I am raised by `GoogleGenAIClient` for HTTP transport failures and non-success
+API responses; catch me with `[ ... ] on: GeminiError do: [ :e | e messageText ]`.
+I carry the API `message`, the HTTP `statusCode`, and the raw error `properties`.
+
+Reference:
+  Error status codes: https://ai.google.dev/api/generate-content
+"
 Class {
 	#name : 'GeminiError',
 	#superclass : 'Error',
@@ -31,6 +40,13 @@ GeminiError >> message [
 GeminiError >> message: anObject [
 
 	message := anObject
+]
+
+{ #category : 'accessing' }
+GeminiError >> messageText [
+	"The standard exception message (so on:do: handlers read e messageText)."
+
+	^ self message asString
 ]
 
 { #category : 'accessing' }
