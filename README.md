@@ -76,5 +76,4 @@ make test    # run the offline test suite
 make ui      # open the Pharo GUI
 ```
 
-See [docs/development.md](docs/development.md) for the full workflow and
-[`.claude/rules/`](.claude/rules/) for coding conventions.
+See [docs/development.md](docs/development.md) for the full workflow.
