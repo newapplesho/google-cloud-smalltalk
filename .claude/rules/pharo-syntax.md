@@ -214,6 +214,24 @@ format, causing `NotFound: BaselineOfGoogleCloud` in CI. Locally the explicit
 }
 ```
 
+## Project Root: `.project` File
+
+Every Pharo/Smalltalk repository must have a `.project` file at the repository
+root. This is Iceberg's project descriptor (hardcoded in
+`IceBasicProject>>projectFilePath`), used to resolve `srcDirectory` and other
+project metadata. It is part of the wider Pharo ecosystem convention (used by
+Pharo itself, Seaside, Moose, Tonel, etc.) — not project-specific, so create it
+when scaffolding any new Pharo project:
+
+```
+{
+	'srcDirectory' : 'src'
+}
+```
+
+Set `'srcDirectory'` to match the actual source folder name (`src` for
+Tonel-based layouts, `pharo-repository` for legacy Monticello-package layouts).
+
 ## Metacello Baseline Convention
 
 **CRITICAL:** The baseline package must be named `BaselineOf<ProjectName>`, NOT
