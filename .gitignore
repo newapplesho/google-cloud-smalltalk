@@ -32,6 +32,9 @@ github-*.zip
 
 # IDE
 .idea
+
+# Claude Code
+.claude/settings.json
 /google_credentials/
 
 # local Pharo image + VM (make setup)
