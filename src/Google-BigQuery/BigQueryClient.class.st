@@ -1,3 +1,12 @@
+"I am the BigQuery service client.
+
+I query datasets and execute SQL via the BigQuery REST API. I extend
+`GoogleAPIClient`, so I inherit authenticated HTTP transport. Main entry points:
+`query:`, `listDatasets`, `listAllDatasets`, `getDataset:`.
+
+Reference:
+  https://cloud.google.com/bigquery/docs/reference/rest
+"
 Class {
 	#name : 'BigQueryClient',
 	#superclass : 'GoogleAPIClient',
@@ -17,11 +26,11 @@ BigQueryClient >> datasetsWithAllParameter: aBoolean [
 ]
 
 { #category : 'rest api' }
-BigQueryClient >> getDataset: datasetId [
+BigQueryClient >> getDataset: aDatasetId [
 
 	| url response |
-	url := 'https://bigquery.googleapis.com/bigquery/v2/projects/'
-	       , self projectId , '/datasets/' , datasetId.
+	url := self serviceEndpoint , '/bigquery/v2/projects/'
+	       , self projectId , '/datasets/' , aDatasetId.
 
 	response := self client httpGet: url.
 	^ self client readFromResponse: response

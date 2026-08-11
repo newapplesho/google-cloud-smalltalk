@@ -1,3 +1,9 @@
+"I am the abstract base class for Google Cloud service clients.
+
+I hold a `GoogleHttpClient` (with Bearer-token authentication), a `projectId`
+and a `location`. Subclasses such as `GoogleGenAIClient` and `BigQueryClient`
+add service-specific REST endpoints and request methods.
+"
 Class {
 	#name : 'GoogleAPIClient',
 	#superclass : 'Object',
@@ -18,9 +24,9 @@ GoogleAPIClient >> client [
 ]
 
 { #category : 'accessing' }
-GoogleAPIClient >> client: anObject [
+GoogleAPIClient >> client: aGoogleHttpClient [
 
-	client := anObject
+	client := aGoogleHttpClient
 ]
 
 { #category : 'default' }
@@ -36,9 +42,9 @@ GoogleAPIClient >> httpClient [
 ]
 
 { #category : 'accessing' }
-GoogleAPIClient >> httpClient: anObject [
+GoogleAPIClient >> httpClient: aGoogleHttpClient [
 
-	httpClient := anObject
+	httpClient := aGoogleHttpClient
 ]
 
 { #category : 'initialization' }
@@ -55,26 +61,26 @@ GoogleAPIClient >> location [
 ]
 
 { #category : 'accessing' }
-GoogleAPIClient >> location: anObject [
+GoogleAPIClient >> location: aString [
 
-	location := anObject
+	location := aString
 ]
 
 { #category : 'accessing' }
 GoogleAPIClient >> logLevel [
 
-	self client logLevel
+	^ self client logLevel
 ]
 
 { #category : 'accessing' }
-GoogleAPIClient >> logLevel: integer [
-	"Set the log level to integer.
+GoogleAPIClient >> logLevel: anInteger [
+	"Set the log level to anInteger.
 	0 - no logging
 	1 - simplified transaction logging
 	2 - detailed transaction logging
 	3 - log everything"
 
-	self client logLevel: integer
+	self client logLevel: anInteger
 ]
 
 { #category : 'accessing' }
@@ -84,7 +90,7 @@ GoogleAPIClient >> projectId [
 ]
 
 { #category : 'accessing' }
-GoogleAPIClient >> projectId: anObject [
+GoogleAPIClient >> projectId: aString [
 
-	projectId := anObject
+	projectId := aString
 ]

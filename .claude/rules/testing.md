@@ -56,6 +56,18 @@ self should: [ client chat: bad ] raise: GeminiError.
 
 Prefer `assert:equals:` over `assert: (x = y)` — gives better failure messages.
 
+For URL and exact-value assertions, prefer `assert:equals:` over
+`includesSubstring:`. A substring match can mask bugs (e.g. `??key=` passes when
+matched against `?key=`):
+
+```smalltalk
+"--- NG: substring match hides double-? bug ---"
+self assert: (url includesSubstring: '?key=').
+
+"--- OK: exact match catches ??key= ---"
+self assert: url equals: 'https://example.com/v1/models/gemini:op?key=test'.
+```
+
 ## JSON round-trip pattern
 
 When testing serialization, parse the produced JSON back with `NeoJSONReader`

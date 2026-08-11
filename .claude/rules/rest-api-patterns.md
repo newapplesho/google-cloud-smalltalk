@@ -74,7 +74,21 @@ GeminiResponse class >> fromJson: jsonString [
 Expose typed accessors (`text`, `functionCalls`, `hasFunctionCall`) rather than
 leaking raw dictionaries to callers.
 
-## Endpoint building (Vertex AI vs API Key)
+## Endpoint building
+
+Always use `self serviceEndpoint` for the base URL — never hardcode the hostname.
+This ensures the endpoint is configurable and consistent across all methods in a
+service client.
+
+```smalltalk
+"--- NG: hardcoded ---"
+url := 'https://bigquery.googleapis.com/bigquery/v2/projects/' , self projectId.
+
+"--- OK: uses serviceEndpoint ---"
+url := self serviceEndpoint , '/bigquery/v2/projects/' , self projectId.
+```
+
+### Vertex AI vs API Key
 
 `GoogleGenAIConfig>>serviceEndpoint` returns the base URL per mode; clients
 append the path. Vertex AI uses
@@ -94,6 +108,25 @@ Use exceptions — the idiomatic Pharo way — not returned error values.
 - The core layer raises `GoogleRestException` likewise.
 - Do **not** type-switch on a returned object (`isKindOf: GeminiError`) — that is
   a non-Smalltalk result-value style. Signal and catch instead.
+
+### Google API error response structure
+
+Google REST APIs wrap errors in a nested `error` object:
+
+```json
+{"error": {"code": 400, "message": "Invalid request", "status": "INVALID_ARGUMENT"}}
+```
+
+When extracting the message, always look for the nested `error` key first, then
+fall back to the top-level object:
+
+```smalltalk
+errorObj := responseJson at: #error ifAbsent: [ responseJson ].
+message := errorObj at: #message ifAbsent: [ 'Unknown error' ].
+```
+
+Make error accessors (`code`, `status`, `message`) nil-safe — the error object
+may not be set for all error paths (e.g. HTTP transport failures).
 
 ## Function calling (Gemini)
 

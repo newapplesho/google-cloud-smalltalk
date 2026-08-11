@@ -20,9 +20,10 @@ Class {
 
 { #category : 'instance creation' }
 GeminiCandidate class >> fromJson: jsonData [
+
 	^ self new
-		initializeFromJson: jsonData;
-		yourself
+		  initializeFromJson: jsonData;
+		  yourself
 ]
 
 { #category : 'accessing' }

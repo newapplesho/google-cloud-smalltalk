@@ -1,3 +1,9 @@
+"I hold the shared configuration for a Google Cloud service client.
+
+I provide a `projectId` and a `location` (default `us-central1`). A class-side
+`default` singleton lets multiple clients share one configuration. Subclasses
+such as `GoogleGenAIConfig` add service-specific settings.
+"
 Class {
 	#name : 'GoogleAPIConfig',
 	#superclass : 'Object',
@@ -14,13 +20,14 @@ Class {
 
 { #category : 'accessing' }
 GoogleAPIConfig class >> default [
-	default ifNil: [ default := self new ].
-	^default
+
+	^ default ifNil: [ default := self new ]
 ]
 
 { #category : 'class initialization' }
 GoogleAPIConfig class >> initialize [
-	default := nil.
+
+	default := nil
 ]
 
 { #category : 'accessing' }

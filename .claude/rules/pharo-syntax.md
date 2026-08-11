@@ -133,13 +133,23 @@ result ifNil: [ ^ GeminiError signal: 'No result' ].
 | Anti-pattern | Correct | Reason |
 |---|---|---|
 | `value isNil ifTrue: [...]` | `value ifNil: [...]` | specialized message |
-| `value notNil ifTrue: [...]` | `value ifNotNil: [:v | ...]` | passes non-nil value |
 | `col at: 1` | `col first` | intent is clear |
 | `col at: col size` | `col last` | intent is clear |
 | `MyClass new` (inside a method) | `self class new` | rename-safe, inheritance-friendly |
 | `flag = true` | `flag` | redundant comparison |
 | `flag = false` | `flag not` | redundant comparison |
 | `^ condition ifTrue: [ true ] ifFalse: [ false ]` | `^ condition` | boolean IS the result |
+
+`notNil ifTrue:` is also an anti-pattern — use `ifNotNil:` which passes the
+non-nil value as the block argument:
+
+```smalltalk
+"--- NG ---"
+value notNil ifTrue: [ self doSomethingWith: value ].
+
+"--- OK ---"
+value ifNotNil: [:v | self doSomethingWith: v ].
+```
 
 Instance variable access rules:
 
@@ -157,6 +167,17 @@ Instance variable access rules:
 | Predicate       | `is`/`has` + adjective                          | `isText`, `hasFunctionCall` |
 | Instance var    | lowerCamelCase, no underscores                  | `functionCall`         |
 | Class var       | UpperCamelCase                                  | `Default`, `Instance`  |
+| Parameter       | `a`/`an` + type or domain hint                 | `aString`, `aDatasetId`, `aGeminiConversation` |
+
+**Parameter naming rule**: parameters use the `a`/`an` prefix. Choose the suffix
+based on context:
+
+- **Setter whose meaning is obvious from the method name** — use a type hint:
+  `name: aString`, `timeout: anInteger`, `config: aGoogleGenAIConfig`.
+- **Parameter whose role is NOT obvious from the method name** — use a domain
+  concept: `getDataset: aDatasetId`, `credentialsForType: aType`.
+- **Never** use the generic `anObject` unless the parameter genuinely accepts any
+  object.
 
 ## Protocol Names (standard set)
 
@@ -164,8 +185,9 @@ Instance variable access rules:
 'instance creation'    class-side factory methods
 'initialization'       initialize
 'accessing'            getters and setters
-'building'             incremental construction (addTool:, addPart:)
+'building'             incremental construction (addTool:, addPart:, addUser:)
 'converting'           asJson, asDictionary, asArray
+'enumerating'          delegated collect:, do:, select: on inner collections
 'testing'              isText, hasFunctionCall, etc.
 'private'              internal helpers
 'printing'             printOn:
@@ -239,6 +261,68 @@ Tonel-based layouts, `pharo-repository` for legacy Monticello-package layouts).
 for a package literally named `BaselineOfGoogleCloud`. Any other name causes
 `NotFound: BaselineOfGoogleCloud`.
 
+## Getter Methods Must Return
+
+Every getter (accessor) method **must** use `^` to return its value. A getter
+without `^` silently returns `nil`, which is a hard-to-find bug:
+
+```smalltalk
+"--- NG: missing ^, always returns nil ---"
+logLevel [
+    self client logLevel
+]
+
+"--- OK ---"
+logLevel [
+    ^ self client logLevel
+]
+```
+
+## Stream and Resource Management
+
+When reading a file, **never** use bare `readStream` — the stream is not closed
+on error or early return. Always use `readStreamDo:`, which ensures the stream is
+closed:
+
+```smalltalk
+"--- NG: stream leak ---"
+^ (NeoJSONReader on: aFileReference readStream) next
+
+"--- OK ---"
+^ aFileReference readStreamDo: [ :stream |
+    (NeoJSONReader on: stream) next ]
+```
+
+## Lazy-init Accessor vs Explicit nil
+
+If a setter allows `nil` (e.g. to disable a subsystem), the getter must **not**
+lazily recreate the object. Either initialize in `initialize` and keep the getter
+as a pure `^ ivar`, or guard the lazy init with a separate flag:
+
+```smalltalk
+"--- NG: setting to nil is a no-op because the getter recreates ---"
+authClient [
+    ^ authClient ifNil: [ authClient := GoogleAuthClient new ]
+]
+
+"--- OK: initialize + pure getter ---"
+initialize [
+    super initialize.
+    authClient := GoogleAuthClient new
+]
+
+authClient [
+    ^ authClient
+]
+```
+
+## Time Handling
+
+`Time now asSeconds` returns seconds since midnight (0–86399) and **wraps at
+midnight**. For durations that may cross day boundaries (token expiration,
+caching), use `DateAndTime now asUnixTime` (monotonically increasing seconds
+since epoch).
+
 ## Do NOT Generate
 
 - `return`, `null`, `//`, `!=`, `getX`, `setX:`
@@ -255,3 +339,9 @@ for a package literally named `BaselineOfGoogleCloud`. Any other name causes
 - `flag = true` or `flag = false` — use `flag` or `flag not`
 - `someVar := nil` inside `initialize` — instance variables are already `nil`;
   only set non-nil default values in `initialize`
+- Getter methods without `^` — always return with `^`
+- `aFileReference readStream` without `ensure:` — use `readStreamDo:`
+- `Time now asSeconds` for durations crossing midnight — use
+  `DateAndTime now asUnixTime`
+- Parameter named `anObject` when a more specific type or domain name is known —
+  use `aString`, `anInteger`, `aDatasetId`, etc.

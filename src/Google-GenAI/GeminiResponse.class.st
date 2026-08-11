@@ -57,7 +57,7 @@ GeminiResponse >> json [
 	^ NeoJSONReader fromString: self text
 ]
 
-{ #category : 'initialize' }
+{ #category : 'initialization' }
 GeminiResponse >> initializeFromJson: jsonData [
 
 	candidates := (jsonData at: 'candidates' ifAbsent: [ #(  ) ])
