@@ -17,7 +17,7 @@ Class {
 	#package : 'Google-GenAI'
 }
 
-{ #category : 'accessing' }
+{ #category : 'building' }
 GeminiConversation >> addFunctionResponse: aName response: aDictionary [
 	"Append a tool result so the model can continue after a function call."
 
@@ -25,30 +25,31 @@ GeminiConversation >> addFunctionResponse: aName response: aDictionary [
 			 (GeminiFunctionResponse name: aName response: aDictionary))
 ]
 
-{ #category : 'accessing' }
+{ #category : 'building' }
 GeminiConversation >> addMessage: aGeminiChatMessage [
 
 	messages add: aGeminiChatMessage
 ]
 
-{ #category : 'accessing' }
+{ #category : 'building' }
 GeminiConversation >> addModel: aString [
 
 	messages add: (GeminiChatMessage model: aString)
 ]
 
-{ #category : 'accessing' }
+{ #category : 'building' }
 GeminiConversation >> addUser: aString [
+
 	messages add: (GeminiChatMessage user: aString)
 ]
 
-{ #category : 'collection' }
+{ #category : 'enumerating' }
 GeminiConversation >> collect: aBlock [
 
 	^ messages collect: aBlock
 ]
 
-{ #category : 'collection' }
+{ #category : 'enumerating' }
 GeminiConversation >> do: aBlock [
 
 	messages do: aBlock

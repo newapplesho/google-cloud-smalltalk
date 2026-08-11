@@ -1,3 +1,9 @@
+"I send authenticated HTTP requests to Google Cloud REST APIs.
+
+I wrap a `ZnClient` and attach a Bearer token via `GoogleAuthClient`. Service
+clients use my `httpGet:` and `httpPost:contents:` to issue requests, and
+`readFromResponse:` to parse the response through `GoogleRestResponse`.
+"
 Class {
 	#name : 'GoogleHttpClient',
 	#superclass : 'Object',
@@ -12,13 +18,13 @@ Class {
 { #category : 'accessing' }
 GoogleHttpClient >> authClient [
 
-	^ authClient ifNil: [ authClient := GoogleAuthClient new ]
+	^ authClient
 ]
 
 { #category : 'accessing' }
-GoogleHttpClient >> authClient: anObject [
+GoogleHttpClient >> authClient: aGoogleAuthClient [
 
-	authClient := anObject
+	authClient := aGoogleAuthClient
 ]
 
 { #category : 'accessing' }
@@ -44,6 +50,13 @@ GoogleHttpClient >> createRequest [
 GoogleHttpClient >> defaultClient [
 
 	^ ZnClient
+]
+
+{ #category : 'initialization' }
+GoogleHttpClient >> initialize [
+
+	super initialize.
+	authClient := GoogleAuthClient new
 ]
 
 { #category : 'default' }
@@ -74,25 +87,25 @@ GoogleHttpClient >> httpRequest: aUri method: aMethod contents: anEntity [
 
 	anEntity ifNotNil: [ request entity: anEntity ].
 	self client request: request.
-	client execute.
-	^ client response
+	self client execute.
+	^ self client response
 ]
 
 { #category : 'accessing' }
 GoogleHttpClient >> logLevel [
 
-	self client logLevel
+	^ self client logLevel
 ]
 
 { #category : 'accessing' }
-GoogleHttpClient >> logLevel: integer [
-	"Set the log level to integer.
+GoogleHttpClient >> logLevel: anInteger [
+	"Set the log level to anInteger.
 	0 - no logging
 	1 - simplified transaction logging
 	2 - detailed transaction logging
 	3 - log everything"
 
-	self client logLevel: integer
+	self client logLevel: anInteger
 ]
 
 { #category : 'private' }

@@ -98,7 +98,7 @@ GoogleGenAIConfig >> useVertexAI [
 ]
 
 { #category : 'accessing' }
-GoogleGenAIConfig >> useVertexAI: anObject [
+GoogleGenAIConfig >> useVertexAI: aBoolean [
 
-	useVertexAI := anObject
+	useVertexAI := aBoolean
 ]

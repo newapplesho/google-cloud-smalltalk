@@ -1,3 +1,9 @@
+"I exchange Application Default Credentials (ADC) for OAuth2 access tokens.
+
+I support `authorized_user` (refresh-token flow) and `service_account` (RS256 JWT
+exchange). I cache the token and refresh it when expired. `getAccessToken` is the
+main entry point; `GoogleHttpClient` calls it when building authenticated requests.
+"
 Class {
 	#name : 'GoogleAuthClient',
 	#superclass : 'Object',
@@ -64,9 +70,7 @@ GoogleAuthClient >> configureServiceAccountEntity: anEntity using: adcContents [
 { #category : 'private' }
 GoogleAuthClient >> createRequest [
 
-	| request |
-	request := ZnRequest empty.
-	^ request
+	^ ZnRequest empty
 ]
 
 { #category : 'private' }
@@ -76,17 +80,17 @@ GoogleAuthClient >> credentialsForType: aType using: adcContents [
 	entity := ZnApplicationFormUrlEncodedEntity new.
 	self configureEntity: entity forType: aType using: adcContents.
 
-	fetchedAt := Time now asSeconds.
+	fetchedAt := DateAndTime now asUnixTime.
 
 	request := self createRequest.
 	request method: #POST.
 	request url: self oauth2Endpoint.
 	request entity: entity.
 	self httpClient request: request.
-	httpClient execute.
+	self httpClient execute.
 
 	response := (NeoJSONReader on:
-			             httpClient response contents readStream)
+			             self httpClient response contents readStream)
 		            mapClass: GoogleOauth2RefreshResponse;
 		            next.
 	^ response
@@ -101,14 +105,15 @@ GoogleAuthClient >> credentialsLoader [
 ]
 
 { #category : 'accessing' }
-GoogleAuthClient >> credentialsLoader: anObject [
+GoogleAuthClient >> credentialsLoader: aGoogleCredentialLoader [
 
-	credentialsLoader := anObject
+	credentialsLoader := aGoogleCredentialLoader
 ]
 
 { #category : 'default' }
 GoogleAuthClient >> defaultHttpClientClass [
-	^ ZnClient 
+
+	^ ZnClient
 ]
 
 { #category : 'accessing auth' }
@@ -133,8 +138,8 @@ GoogleAuthClient >> fetchCredentials [
 GoogleAuthClient >> getCredentials [
 	"Return cached credentials while still valid, otherwise fetch and cache."
 
-	(tokenCache notNil and: [ tokenCache isExpired not ]) ifTrue: [
-		^ tokenCache ].
+	tokenCache ifNotNil: [ :cache |
+		cache isExpired ifFalse: [ ^ cache ] ].
 	^ tokenCache := self fetchCredentials
 ]
 
@@ -145,13 +150,14 @@ GoogleAuthClient >> httpClient [
 ]
 
 { #category : 'accessing' }
-GoogleAuthClient >> httpClient: anObject [
+GoogleAuthClient >> httpClient: aZnClient [
 
-	httpClient := anObject
+	httpClient := aZnClient
 ]
 
 { #category : 'default' }
 GoogleAuthClient >> oauth2Endpoint [
+
 	^ 'https://oauth2.googleapis.com/token'
 ]
 
@@ -162,7 +168,7 @@ GoogleAuthClient >> tokenCache [
 ]
 
 { #category : 'accessing' }
-GoogleAuthClient >> tokenCache: anObject [
+GoogleAuthClient >> tokenCache: aGoogleOauth2RefreshResponse [
 
-	tokenCache := anObject
+	tokenCache := aGoogleOauth2RefreshResponse
 ]

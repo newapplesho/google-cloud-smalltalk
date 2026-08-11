@@ -48,7 +48,7 @@ GeminiChatRequest >> conversation [
 ]
 
 { #category : 'accessing' }
-GeminiChatRequest >> conversation: anObject [
+GeminiChatRequest >> conversation: aGeminiConversation [
 
-	conversation := anObject
+	conversation := aGeminiConversation
 ]

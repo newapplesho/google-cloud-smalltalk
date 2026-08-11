@@ -21,7 +21,9 @@ Class {
 
 { #category : 'accessing' }
 GeminiError >> code [
-	^ self properties code
+
+	^ self properties
+		  ifNotNil: [ :p | p at: 'code' ifAbsent: [ nil ] ]
 ]
 
 { #category : 'accessing' }
@@ -33,13 +35,15 @@ GeminiError >> errorCode [
 { #category : 'accessing' }
 GeminiError >> message [
 
-	^ message ifNil: [ message := self properties message ]
+	^ message ifNil: [
+		  self properties ifNotNil: [ :p |
+			  message := p at: 'message' ifAbsent: [ nil ] ] ]
 ]
 
 { #category : 'accessing' }
-GeminiError >> message: anObject [
+GeminiError >> message: aString [
 
-	message := anObject
+	message := aString
 ]
 
 { #category : 'accessing' }
@@ -56,15 +60,16 @@ GeminiError >> properties [
 ]
 
 { #category : 'accessing' }
-GeminiError >> properties: anObject [
+GeminiError >> properties: aDictionary [
 
-	properties := anObject
+	properties := aDictionary
 ]
 
 { #category : 'accessing' }
 GeminiError >> status [
 
-	^ self properties status
+	^ self properties
+		  ifNotNil: [ :p | p at: 'status' ifAbsent: [ nil ] ]
 ]
 
 { #category : 'accessing' }
@@ -74,9 +79,9 @@ GeminiError >> statusCode [
 ]
 
 { #category : 'accessing' }
-GeminiError >> statusCode: anObject [
+GeminiError >> statusCode: anInteger [
 
-	statusCode := anObject
+	statusCode := anInteger
 ]
 
 { #category : 'accessing' }

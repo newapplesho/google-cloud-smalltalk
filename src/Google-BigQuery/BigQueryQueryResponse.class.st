@@ -1,5 +1,12 @@
-"
-https://docs.cloud.google.com/bigquery/docs/reference/rest/v2/jobs/query
+"I represent the response from a BigQuery `jobs.query` request.
+
+I parse the raw JSON and provide typed accessors for `rows`, `totalRows`,
+`schema`, `fields`, `jobComplete`, `cacheHit`, `errors` and pagination
+(`pageToken`, `hasMorePages`). `rows` transforms the BigQuery row format into
+an ordered collection of field-name-keyed Dictionaries.
+
+Reference:
+  https://docs.cloud.google.com/bigquery/docs/reference/rest/v2/jobs/query
 "
 Class {
 	#name : 'BigQueryQueryResponse',
@@ -25,7 +32,7 @@ BigQueryQueryResponse >> cacheHit [
 	^ rawJson at: #cacheHit ifAbsent: [ false ]
 ]
 
-{ #category : 'convenience' }
+{ #category : 'enumerating' }
 BigQueryQueryResponse >> collect: aBlock [
 
 	^ self rows collect: aBlock
@@ -37,7 +44,7 @@ BigQueryQueryResponse >> dmlStats [
 	^ rawJson at: #dmlStats ifAbsent: [ nil ]
 ]
 
-{ #category : 'convenience' }
+{ #category : 'enumerating' }
 BigQueryQueryResponse >> do: aBlock [
 
 	self rows do: aBlock
@@ -57,19 +64,19 @@ BigQueryQueryResponse >> fields [
 		  ifNotNil: [ :s | s at: #fields ifAbsent: [ #(  ) ] ]
 ]
 
-{ #category : 'convenience' }
+{ #category : 'testing' }
 BigQueryQueryResponse >> hasErrors [
 
 	^ self errors notEmpty
 ]
 
-{ #category : 'convenience' }
+{ #category : 'testing' }
 BigQueryQueryResponse >> hasMorePages [
 
 	^ self pageToken notNil
 ]
 
-{ #category : 'convenience' }
+{ #category : 'testing' }
 BigQueryQueryResponse >> isEmpty [
 
 	^ self totalRows = 0
@@ -97,8 +104,8 @@ BigQueryQueryResponse >> jobReference [
 
 { #category : 'accessing' }
 BigQueryQueryResponse >> kind [
- ^ rawJson at: #kind ifAbsent: [ nil ]
 
+	^ rawJson at: #kind ifAbsent: [ nil ]
 ]
 
 { #category : 'accessing' }
@@ -126,9 +133,9 @@ BigQueryQueryResponse >> rawJson [
 ]
 
 { #category : 'accessing' }
-BigQueryQueryResponse >> rawJson: anObject [
+BigQueryQueryResponse >> rawJson: aDictionary [
 
-	rawJson := anObject
+	rawJson := aDictionary
 ]
 
 { #category : 'accessing' }

@@ -36,7 +36,9 @@ Metacello new
 ### 1. Set up authentication
 
 ```smalltalk
-Smalltalk platform environment at: 'GOOGLE_APPLICATION_CREDENTIALS' put:(FileLocator home / 'service_account_key.json') pathString.
+Smalltalk platform environment
+    at: 'GOOGLE_APPLICATION_CREDENTIALS'
+    put: (FileLocator home / 'service_account_key.json') pathString.
 ```
 
 See [Getting Started](docs/getting-started.md) for more authentication options.

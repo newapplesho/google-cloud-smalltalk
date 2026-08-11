@@ -1,3 +1,8 @@
+"I am the Metacello baseline for google-cloud-smalltalk.
+
+I declare package dependencies (NeoJSON, JSONWebToken) and load groups: Core
+(Auth + Core), GenAI, BigQuery, Tests, and the default (all of the above).
+"
 Class {
 	#name : 'BaselineOfGoogleCloud',
 	#superclass : 'BaselineOf',

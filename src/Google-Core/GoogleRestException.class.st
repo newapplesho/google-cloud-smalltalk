@@ -1,3 +1,8 @@
+"I am the exception signalled when a Google Cloud REST API request fails.
+
+I carry the raw error `properties` (parsed JSON) from the API response. Callers
+catch me with `[ ... ] on: GoogleRestException do: [ :e | e messageText ]`.
+"
 Class {
 	#name : 'GoogleRestException',
 	#superclass : 'Error',
@@ -15,7 +20,7 @@ GoogleRestException >> properties [
 ]
 
 { #category : 'accessing' }
-GoogleRestException >> properties: anObject [
+GoogleRestException >> properties: aDictionary [
 
-	properties := anObject
+	properties := aDictionary
 ]

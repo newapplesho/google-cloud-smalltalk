@@ -17,8 +17,7 @@ Class {
 	#name : 'GoogleGenAIClient',
 	#superclass : 'GoogleAPIClient',
 	#instVars : [
-		'config',
-		'generativeModel'
+		'config'
 	],
 	#category : 'Google-GenAI',
 	#package : 'Google-GenAI'
@@ -39,21 +38,21 @@ GoogleGenAIClient >> buildUrlFor: aGeminiRequest [
 	self config useVertexAI ifTrue: [
 		^ String streamContents: [ :stream |
 			  stream
-				  nextPutAll: config serviceEndpoint;
+				  nextPutAll: self config serviceEndpoint;
 				  nextPutAll: 'v1/projects/';
-				  nextPutAll: config projectId;
+				  nextPutAll: self config projectId;
 				  nextPutAll: '/locations/';
-				  nextPutAll: config location;
+				  nextPutAll: self config location;
 				  nextPutAll: '/publishers/google/models/';
 				  nextPutAll: aGeminiRequest model;
 				  nextPutAll: ':generateContent' ] ].
 	^ String streamContents: [ :stream |
 		  stream
-			  nextPutAll: config serviceEndpoint;
+			  nextPutAll: self config serviceEndpoint;
 			  nextPutAll: 'v1beta/models/';
 			  nextPutAll: aGeminiRequest model;
-			  nextPutAll: ':generateContent??key=';
-			  nextPutAll: config apiKey ]
+			  nextPutAll: ':generateContent?key=';
+			  nextPutAll: self config apiKey ]
 ]
 
 { #category : 'rest api' }
@@ -97,9 +96,9 @@ GoogleGenAIClient >> config [
 ]
 
 { #category : 'accessing' }
-GoogleGenAIClient >> config: anObject [
+GoogleGenAIClient >> config: aGoogleGenAIConfig [
 
-	config := anObject
+	config := aGoogleGenAIConfig
 ]
 
 { #category : 'default' }
@@ -142,24 +141,12 @@ GoogleGenAIClient >> generateContent: aPrompt withModel: modelName tools: aToolC
 	^ self send: request
 ]
 
-{ #category : 'accessing' }
-GoogleGenAIClient >> generativeModel [
-
-	^ generativeModel
-]
-
-{ #category : 'accessing' }
-GoogleGenAIClient >> generativeModel: anObject [
-
-	generativeModel := anObject
-]
-
 { #category : 'error handling' }
 GoogleGenAIClient >> messageFrom: errorObj [
 	"Extract a human-readable message from the API error JSON."
 
 	errorObj ifNil: [ ^ 'Unknown API Error' ].
-	(errorObj isKindOf: Dictionary) ifTrue: [
+	errorObj isDictionary ifTrue: [
 		^ errorObj at: 'message' ifAbsent: [ errorObj printString ] ].
 	^ errorObj asString
 ]
@@ -168,11 +155,17 @@ GoogleGenAIClient >> messageFrom: errorObj [
 GoogleGenAIClient >> signalApiError: response [
 	"Signal a GeminiError describing a non-success API response."
 
-	| errorData |
-	errorData := NeoJSONReader fromString: response contents.
+	| errorData errorObj |
+	errorData := response contents ifNotNil: [ :body |
+		             [ NeoJSONReader fromString: body ]
+			             on: NeoJSONParseError
+			             do: [ :ex | nil ] ].
+	errorObj := errorData ifNotNil: [
+		            errorData at: 'error' ifAbsent: [ nil ] ].
 	^ (GeminiError new
-		   message: (self messageFrom: (errorData at: 'error' ifAbsent: [ nil ]));
+		   message: (self messageFrom: errorObj);
 		   statusCode: response code;
+		   properties: errorObj;
 		   yourself) signal
 ]
 
@@ -229,7 +222,6 @@ GoogleGenAIClient >> runConversation: aConversation tools: aToolCollection handl
 	 model stops calling functions (or the iteration guard is reached)."
 
 	| response |
-	response := nil.
 	maxIterations timesRepeat: [
 		response := self chat: aConversation tools: aToolCollection.
 		response hasFunctionCall ifFalse: [ ^ response ].
@@ -248,7 +240,7 @@ GoogleGenAIClient >> runHandlerFor: aFunctionCall with: handlers [
 			             put: 'No handler for ' , aFunctionCall name;
 			             yourself ].
 	result := handler value: aFunctionCall args.
-	^ (result isKindOf: Dictionary)
+	^ result isDictionary
 		  ifTrue: [ result ]
 		  ifFalse: [ Dictionary new at: 'result' put: result; yourself ]
 ]
@@ -274,18 +266,21 @@ GoogleGenAIClient >> sendRequest: aGeminiRequest [
 	"POST the request and answer the raw response body on success.
 	 On an HTTP transport failure or a non-success status, signal a GeminiError."
 
-	| url jsonPayload response |
+	| url jsonPayload response savedAuth |
 	url := self buildUrlFor: aGeminiRequest.
 	jsonPayload := aGeminiRequest asJson.
 
-	self config useVertexAI ifFalse: [ self client authClient: nil ].
-
+	self config useVertexAI ifFalse: [
+		savedAuth := self client authClient.
+		self client authClient: nil ].
+	[
 	[
 	response := self client
 		            httpPost: url
 		            contents: (ZnEntity json: jsonPayload) ]
-		on: Error
-		do: [ :ex | self signalHttpError: ex ].
+		on: NetworkError , ZnHttpUnsuccessful
+		do: [ :ex | self signalHttpError: ex ] ]
+		ensure: [ savedAuth ifNotNil: [ self client authClient: savedAuth ] ].
 
 	^ response isSuccess
 		  ifTrue: [ response contents ]

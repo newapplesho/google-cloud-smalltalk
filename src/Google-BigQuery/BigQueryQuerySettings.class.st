@@ -1,6 +1,11 @@
-"
-#BigQueryQuerySettings
-https://docs.cloud.google.com/bigquery/docs/reference/rest/v2/jobs/query
+"I configure a BigQuery `jobs.query` request.
+
+I hold settings such as `dryRun`, `maxResults`, `timeoutMs` and `useLegacySql`.
+`asDictionary` serializes me to the JSON body expected by the API. By default,
+`dryRun` is false and `useLegacySql` is false (standard SQL).
+
+Reference:
+  https://docs.cloud.google.com/bigquery/docs/reference/rest/v2/jobs/query
 "
 Class {
 	#name : 'BigQueryQuerySettings',
@@ -14,8 +19,8 @@ Class {
 
 { #category : 'converting' }
 BigQueryQuerySettings >> asDictionary [
- ^ settings copy
 
+	^ settings copy
 ]
 
 { #category : 'settings' }
@@ -40,9 +45,9 @@ BigQueryQuerySettings >> maxResults: anInteger [
 ]
 
 { #category : 'settings' }
-BigQueryQuerySettings >> timeoutMs: anInteger [ 
- settings at: 'timeoutMs' put: anInteger
+BigQueryQuerySettings >> timeoutMs: anInteger [
 
+	settings at: 'timeoutMs' put: anInteger
 ]
 
 { #category : 'settings' }

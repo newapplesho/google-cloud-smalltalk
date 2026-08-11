@@ -1,3 +1,9 @@
+"I locate and load Google Application Default Credentials (ADC) from disk.
+
+I check the `GOOGLE_APPLICATION_CREDENTIALS` environment variable first, then fall
+back to `~/.config/gcloud/application_default_credentials.json`. The returned
+`NeoJSONObject` contains the credential type and secrets needed for token exchange.
+"
 Class {
 	#name : 'GoogleCredentialLoader',
 	#superclass : 'Object',
@@ -49,8 +55,9 @@ GoogleCredentialLoader >> loadCredentialsFromFile: aFileReference [
 	(aFileReference exists and: [ aFileReference isFile ]) ifFalse: [
 		^ self error: 'Credentials file does not exist or is not a file: '
 			  , aFileReference fullName ].
-	^ (NeoJSONReader on: aFileReference readStream)
-		  mapClass: NeoJSONObject;
-		  propertyNamesAsSymbols: true;
-		  next
+	^ aFileReference readStreamDo: [ :stream |
+		  (NeoJSONReader on: stream)
+			  mapClass: NeoJSONObject;
+			  propertyNamesAsSymbols: true;
+			  next ]
 ]
