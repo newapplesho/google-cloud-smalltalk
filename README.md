@@ -66,6 +66,7 @@ for chat, **function calling**, code generation, and more.
 - [Gemini AI](docs/gemini.md) - Text generation, chat, function calling, structured output
 - [BigQuery](docs/bigquery.md) - Dataset management
 - [Development](docs/development.md) - Building and testing the library in Pharo
+- [Contributing](CONTRIBUTING.md) - How to report issues and submit pull requests
 - [Roadmap](ROADMAP.md) - Planned features
 
 ## Development
